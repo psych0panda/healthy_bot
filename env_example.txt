@@ -1,3 +1,10 @@
 # Токен вашего Telegram бота
 # Получите токен у @BotFather в Telegram
 TELEGRAM_BOT_TOKEN=your_bot_token_here
+
+# Конфигурация сервисов для мониторинга
+# Поддерживаемые форматы:
+# 1. Полный формат: "имя:тип:конфигурация,имя2:тип2:конфигурация2"
+# 2. Упрощенный формат: "http://localhost:8080,postgresql,nginx,redis"
+# Типы: http://url, docker:имя_контейнера, process:имя_процесса
+SERVICES_TO_MONITOR=http://localhost:8080,http://localhost:3000,postgresql,nginx,redis,wg-quick@wg0,minio,docker:jenkins,docker:eager_robinson
