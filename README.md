@@ -182,4 +182,3 @@ self.application.add_handler(CommandHandler("new", self.new_command))
 - Файл `.env` добавлен в `.gitignore`
 - Обработка ошибок для предотвращения падения бота
 
----
