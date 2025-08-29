@@ -1,9 +1,10 @@
 import os
 import logging
 from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
 from dotenv import load_dotenv
 from service_monitor import ServiceMonitor
+from logs_module import LogsModule
 
 # Загружаем переменные окружения
 load_dotenv()
@@ -23,6 +24,7 @@ class HealthCheckBot:
         
         self.application = Application.builder().token(self.token).build()
         self.service_monitor = ServiceMonitor()
+        self.logs_module = LogsModule()
         self.last_statuses = []
         
         self._setup_handlers()
@@ -39,6 +41,11 @@ class HealthCheckBot:
         # Команды мониторинга
         self.application.add_handler(CommandHandler("status", self.status_command))
         self.application.add_handler(CommandHandler("services", self.services_command))
+        
+        # Команды логов
+        self.application.add_handler(CommandHandler("logs", self.logs_module.logs_command))
+        self.application.add_handler(CallbackQueryHandler(self.logs_module.handle_log_callback, pattern="^get_log:"))
+        self.application.add_handler(CallbackQueryHandler(self.logs_module.handle_log_callback, pattern="^get_all_logs$"))
     
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Обработчик команды /start"""
@@ -60,6 +67,9 @@ class HealthCheckBot:
 /status - Проверить статус всех сервисов
 /services - Показать список мониторимых сервисов
 
+📄 Команды логов:
+/logs - Получить логи Docker контейнеров
+
 Попробуйте команду /status для проверки сервисов!
         """
         await update.message.reply_text(welcome_message)
@@ -80,9 +90,13 @@ class HealthCheckBot:
 /status - Проверить статус всех сервисов
 /services - Показать список мониторимых сервисов
 
+📄 Команды логов:
+/logs - Получить логи Docker контейнеров
+
 💡 Примеры использования:
 /echo Привет, мир!
-/status - проверить все сервисы"""
+/status - проверить все сервисы
+/logs - получить логи контейнеров"""
         await update.message.reply_text(help_text)
     
     async def hello_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -125,10 +139,10 @@ class HealthCheckBot:
 👤 Username: @{username}
 
 🤖 Бот: HealthCheck Bot
-📅 Версия: 1.0.0
-🔧 Функции: Мониторинг сервисов
+📅 Версия: 1.1.0
+🔧 Функции: Мониторинг сервисов и логов
 
-💬 Всего команд: 8"""
+💬 Всего команд: 9"""
         await update.message.reply_text(info_text)
     
     async def status_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
