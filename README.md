@@ -181,3 +181,5 @@ self.application.add_handler(CommandHandler("new", self.new_command))
 - Токен бота хранится в переменных окружения
 - Файл `.env` добавлен в `.gitignore`
 - Обработка ошибок для предотвращения падения бота
+
+---
